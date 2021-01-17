@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    ports: 
+      - 9000:9000
+    volumes: 
+      - './src/:/home/nugraha/sites/'
+    networks: 
+      - lemp
+  
+  webserver:
+    image: nginx:latest
+    container_name: webserver
+    ports: 
+      - 80:80
+      - 443:443
+    volumes: 
+      - './src/:/home/nugraha/sites/'
+      - './nginx/conf.d/:/etc/nginx/conf.d/'
+    networks: 
+      - lemp
+  
+  database:
+    image: mysql:latest
+    container_name: database
+    environment: 
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+    ports: 
+      - 3306:3306
+    networks: 
+      - lemp
+
+networks: 
+  lemp:
+    driver: bridge
