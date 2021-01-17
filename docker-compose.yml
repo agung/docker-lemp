@@ -9,7 +9,8 @@ services:
     ports: 
       - 9000:9000
     volumes: 
-      - './src/:/home/nugraha/sites/'
+      - './php/conf.d/local.ini:/usr/local/etc/php/conf.d/local.ini'
+      - './src/:/home/nugraha/'
     networks: 
       - lemp
   
@@ -20,7 +21,7 @@ services:
       - 80:80
       - 443:443
     volumes: 
-      - './src/:/home/nugraha/sites/'
+      - './src/:/home/nugraha/'
       - './nginx/conf.d/:/etc/nginx/conf.d/'
     networks: 
       - lemp
@@ -33,6 +34,14 @@ services:
       MYSQL_DATABASE: test
     ports: 
       - 3306:3306
+    networks: 
+      - lemp
+
+  redis:
+    image: redis:5
+    container_name: redis
+    ports: 
+      - 6379:6379
     networks: 
       - lemp
 
