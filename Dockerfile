@@ -1,4 +1,4 @@
-FROM php:7.4-fpm
+FROM php:7.2-fpm
 
 WORKDIR /home/nugraha/
 
@@ -18,11 +18,21 @@ RUN apt-get update && apt-get install -y \
     git \
     curl
 
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+# install php extension
+RUN docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
         mysqli pdo_mysql soap xsl zip sockets bcmath intl
 
-RUN docker-php-ext-install opcache
+# install opcache
+RUN docker-php-ext-install opcache && docker-php-ext-enable opcache
+
+# install ioncube
+RUN curl -fsSL 'https://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz' -o ioncube.tar.gz \ 
+    && mkdir -p /tmp/ioncube \ 
+    && tar -xvvzf ioncube.tar.gz \ 
+    && mv ioncube/ioncube_loader_lin_7.2.so `php-config --extension-dir` \ 
+    && rm -Rf ioncube.tar.gz ioncube \ 
+    && docker-php-ext-enable ioncube_loader_lin_7.2
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --version=1.10.19
 
